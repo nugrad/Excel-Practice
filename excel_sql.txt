@@ -1,0 +1,194 @@
+---------------------------------------SQL--------------------------------------
+DROP DATABASE IF EXISTS sql_practice;
+CREATE DATABASE sql_practice;
+USE sql_practice;
+#---------------
+CREATE TABLE departments (
+    department_id INT PRIMARY KEY,
+    department_name VARCHAR(50),
+    manager_name VARCHAR(50)
+);
+#------------------
+CREATE TABLE employees (
+    employee_id INT PRIMARY KEY,
+    employee_name VARCHAR(50),
+    salary INT,
+    hire_date DATE,
+    department_id INT,
+    FOREIGN KEY (department_id) REFERENCES departments(department_id)
+);
+#-------------------
+CREATE TABLE customers (
+    customer_id INT PRIMARY KEY,
+    customer_name VARCHAR(50),
+    region VARCHAR(50),
+    signup_date DATE
+);
+#----------------
+CREATE TABLE products (
+    product_id INT PRIMARY KEY,
+    product_name VARCHAR(50),
+    category VARCHAR(50),
+    price DECIMAL(10,2),
+    cost DECIMAL(10,2)
+);
+#------------------
+CREATE TABLE orders (
+    order_id INT PRIMARY KEY,
+    customer_id INT,
+    employee_id INT,
+    order_date DATE,
+    FOREIGN KEY (customer_id) REFERENCES customers(customer_id),
+    FOREIGN KEY (employee_id) REFERENCES employees(employee_id)
+);
+#----------------
+CREATE TABLE order_items (
+    order_item_id INT PRIMARY KEY,
+    order_id INT,
+    product_id INT,
+    quantity INT,
+    FOREIGN KEY (order_id) REFERENCES orders(order_id),
+    FOREIGN KEY (product_id) REFERENCES products(product_id)
+);
+#--------------
+INSERT INTO departments VALUES
+(1, 'HR', 'Ahmed'),
+(2, 'IT', 'Sara'),
+(3, 'Finance', 'Ali'),
+(4, 'Sales', 'Fatima');
+INSERT INTO employees VALUES
+(101, 'Hassan', 50000, '2022-01-10', 1),
+(102, 'Ayesha', 70000, '2021-03-15', 2),
+(103, 'Bilal', 60000, '2023-07-01', 2),
+(104, 'Zara', 55000, '2022-11-20', 3),
+(105, 'Usman', 80000, '2020-05-18', 4),
+(106, 'Kiran', 75000, '2019-09-10', 4),
+(107, 'Imran', 65000, '2023-01-01', 4);
+INSERT INTO customers VALUES
+(201, 'Client_A', 'East', '2023-01-10'),
+(202, 'Client_B', 'West', '2023-02-15'),
+(203, 'Client_C', 'North', '2023-03-20'),
+(204, 'Client_D', 'South', '2023-04-05'),
+(205, 'Client_E', 'East', '2023-05-12'),
+(206, 'Client_F', 'West', '2023-06-30');
+INSERT INTO products VALUES
+(301, 'Laptop', 'Electronics', 1200.00, 800.00),
+(302, 'Tablet', 'Electronics', 700.00, 400.00),
+(303, 'Desk', 'Furniture', 400.00, 250.00),
+(304, 'Chair', 'Furniture', 200.00, 120.00),
+(305, 'Printer', 'Office Supplies', 500.00, 300.00),
+(306, 'Monitor', 'Electronics', 600.00, 350.00);
+INSERT INTO orders VALUES
+(401, 201, 105, '2024-01-05'),
+(402, 202, 106, '2024-01-10'),
+(403, 203, 105, '2024-02-01'),
+(404, 204, 107, '2024-02-15'),
+(405, 205, 106, '2024-03-05'),
+(406, 206, 105, '2024-03-20');
+INSERT INTO order_items VALUES
+(501, 401, 301, 2),
+(502, 401, 304, 5),
+(503, 402, 302, 1),
+(504, 402, 305, 3),
+(505, 403, 306, 4),
+(506, 404, 303, 2),
+(507, 405, 301, 1),
+(508, 405, 302, 2),
+(509, 406, 305, 6);
+#---------------------------------
+# Practice Query # 1:
+Select o.order_id,o.order_date ,c.customer_name 
+from orders o
+join customers c 
+ on o.customer_id =c.customer_id;
+
+ # -------query # 2 : 
+ # total customers
+ select count(*) as  total_customers from customers c;
+
+ # query 3 : distinct regions
+ select count(distinct region) as total_regions from customers c;
+
+# query 4 : total sales revenue
+select sum(oi.quantity*p.price) as total_revenue 
+from order_items oi 
+join  products p 
+on oi.product_id=p.product_id;
+
+# Query 5 : avg product price per category
+select avg(p.price) as avg_price_prod,p.category
+from products p 
+group by p.category;
+
+# query 6 : total sales revenue per region
+select c.region,sum(oi.quantity*p.price)as total_revenue 
+from order_items oi 
+join products p on p.product_id=oi.product_id
+join  orders o on oi.order_id=o.order_id
+join customers c on o.customer_id=c.customer_id
+group by c.region;
+
+# query 7 : max salary
+select max(e.salary) as max_salary from employees e;
+
+# query 8 : employee with max salary
+select e.employee_id, e.employee_name,e.salary
+from employees e 
+where e.salary=(select max(ep.salary) as max_sal from employees ep);
+
+# query 9 : department where total_salary > 150000
+select d.department_name , d.department_id , sum(e.salary) as total_salary
+from departments d 
+join employees e on d.department_id=e.department_id
+group by d.department_name, d.department_id
+having total_salary  > 150000;
+
+# query 10 :  employee with third highest salary
+select e.employee_name, e.employee_id,e.salary 
+from employees e 
+order by e.salary desc
+limit 1 offset 2;
+
+# query 11: departments that have more than 2 employees
+select d.department_name , d.department_id , count(e.employee_id) as emp_count
+from departments d 
+join employees e on d.department_id=e.department_id
+group by d.department_name, d.department_id 
+having emp_count > 2;
+
+# query 12: 
+select * from customers c where  c.region="east";
+
+# query 13:
+select p.product_name from products p where
+p.category="electronics"and p.price > 300;
+-------------------------------------------------------------------------------------------------------------------
+------------------------------EXCEL--------------------------------------------------------------------------------
+Total sales overall  : =SUM(H:H)
+
+Total Quantity sold  : =SUM(F:F)
+
+Total orders         : =COUNTA(A:A)
+
+count of orders above 2500 : =COUNTIF(H:H,">2500")
+
+Total sales for region east : =SUMIF(D:D,"East",H:H), here col D has regions and col H has total sales
+
+Total sales for furniture   : =SUMIF(K:K,"Furniture",H:H) , here col K has category ie furniture
+
+total sales for east region and electronics category : =SUMIFS(H:H,D:D,"East",K:K,"Electronics")
+
+where is printer in table Products_Info : =MATCH("printer",Products_Info!B:B,0), printer is in col B of sheet Products_info
+
+IF condition , here we introduced a new col named Order profile and used following if condition : =IF(H2>20000,"high value","normal"), col H has total sales , cal row wise 
+
+VLOOKUP Product name : =VLOOKUP(E2,Products_Info!A:D,2,FALSE), here col E is Product_ID which has to be first col of Sheet Product_Info , we search through col A to D of sheet Product_Info and fetch values from second column(2) this we can get Product Category corresponding to Product_ID.
+
+XLOOKUP Cost Price =XLOOKUP(E2,Products_Info!A:A,Products_Info!D:D)
+
+
+
+
+
+
+

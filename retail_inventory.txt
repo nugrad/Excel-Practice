@@ -1,0 +1,84 @@
+LEVEL 1 — Data Cleaning (Basic but strict)
+
+You MUST check:
+
+Duplicate SKUs
+Missing stock values
+Negative quantities (very common error)
+Text inconsistencies (categories, supplier names)
+Numbers stored as text
+
+👉 Goal:
+Clean dataset → Inventory_Clean
+ Use the formula =IF(ISBLANK(A2), 0, A2) in an adjacent column to populate 0 if the cell is blank, and retain the original value otherwise. ( for missing values)
+=MAX(0, A1) (for negative)
+for duplicates goto data tab abd remive duplicates
+for text consistencies 
+Fix Inconsistent Capitalization: Combine with PROPER, UPPER, or LOWER.
+Example: =PROPER(TRIM(A2)) makes text look like "John Doe".
+Remove Non-Printable Characters: If there are hidden characters, use CLEAN.
+Example: =TRIM(CLEAN(A2))
+-----------------------
+or we can use powerquery in excel as well.
+if [ColumnName] < 0 then 0 else [ColumnName]
+------------------------------------------------------------------
+EVEL 2 — Core Inventory Analysis (Real Business)
+
+Now we do meaningful analysis.
+stock is our closing stock
+
+🔹 1. Stock Health Analysis
+
+👉 Questions:
+
+Which products are low stock?
+Which are overstocked?
+Use:
+IF
+Conditional formatting
+
+Example logic:
+
+=IF(Stock < Reorder_Level, "Low Stock", "OK")
+🔹 2. Inventory Value
+
+👉 Key metric:
+
+Inventory Value = Stock * Cost Price/retail price
+
+
+Now you can answer:
+
+Where is money tied up?
+Which category holds most value?
+🔹 3. Fast vs Slow Moving Products
+
+If you have sales/quantity sold:
+
+👉 Create:
+
+Fast moving
+Slow moving
+
+Use:
+
+=IF(Sales > threshold, "Fast", "Slow")
+🔹 4. Category Performance
+
+Pivot:
+
+Rows → Category
+Values → Inventory Value
+
+👉 Which category is heavy?
+
+🔹 5. Supplier Dependency
+
+Pivot:
+
+Rows → Supplier
+Values → Inventory Value
+
+👉 Are you dependent on few suppliers?
+-------------------------------------------------------------
+
